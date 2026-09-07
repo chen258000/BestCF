@@ -66,39 +66,34 @@ jobs:
           curl -sSL https://ipdb.api.030101.xyz/?type=bestcfv4 | head -n 5 | awk '{print $0 "#CF-IPv4_IPDB_" NR}' >> ./bestcf/bestcf-ip.txt
           curl -sSL https://ipdb.api.030101.xyz/?type=bestcfv6 | head -n 5 | awk '{print "["$0"]#CF-IPv6_IPDB_" NR}' >> ./bestcf/bestcf-ipv6.txt
 
+          # Country-IP (LancelotRar best-cf-ips)
+          # 使用源文件中的国家标识关键词分类，不调用IP查询接口
+          mkdir -p ./bestcf/country
+          curl -sSL https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ipv4.txt > ./tmp-country-ip.txt
 
+          # 根据文本中的国家代码/地区标识分类
+          # 去除原文件末尾的 #US/#HK 等标签，再重新生成 CF-IPv4 标签
+          awk '
+          {
+              line=$0
 
-# Country classify
-mkdir -p ./bestcf/country
+              # 提取原始IP:端口（删除最后的国家标签）
+              ip=$1
+              sub(/#.*/, "", ip)
 
-curl -sSL https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ipv4.txt \
-> ./tmp/best-cf-ipv4.txt
+              # 提取国家代码
+              if (match(line, /#([A-Za-z0-9_-]+)/, a)) {
+                  country=toupper(a[1])
+              } else {
+                  country="OTHER"
+              }
 
-declare -A COUNT
+              count[country]++
+              print ip "#CF-IPv4_" country "_" count[country] > "./bestcf/country/" country ".txt"
+          }
+          ' ./tmp-country-ip.txt
 
-while read -r line
-do
-    # 去除空行
-    [ -z "$line" ] && continue
-
-    # 提取IP:端口
-    IP="${line%%#*}"
-
-    # 提取国家
-    COUNTRY="${line##*#}"
-
-    # 防止异常
-    [ -z "$COUNTRY" ] && continue
-    [ -z "$IP" ] && continue
-
-    COUNT[$COUNTRY]=$((COUNT[$COUNTRY]+1))
-
-    echo "${IP}#CF-IPv4_${COUNTRY}_${COUNT[$COUNTRY]}" \
-    >> "./bestcf/country/${COUNTRY}.txt"
-
-done < ./tmp/best-cf-ipv4.txt
-
-          rm -f ./best-cf-ipv4.txt
+          rm -f ./tmp-country-ip.txt
 
           # Proxy-IP
           curl -sSL https://ipdb.api.030101.xyz/?type=bestproxy | head -n 5 | awk '{print $0 "#Proxy-IPv4_IPDB_" NR}' > ./bestcf/proxy-ip.txt
