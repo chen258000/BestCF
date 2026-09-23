@@ -69,7 +69,7 @@ jobs:
           # Country-IP (LancelotRar best-cf-ips)
           # 使用源文件中的国家标识关键词分类，不调用IP查询接口
           mkdir -p ./bestcf/country
-          curl -sSL https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ip-scanned-top100.txt > ./tmp-country-ip.txt
+          curl -sSL https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ip-scanned-top400.txt > ./tmp-country-ip.txt
 
           # 根据文本中的国家代码/地区标识分类
           # 去除原文件末尾的 #US/#HK 等标签，再重新生成 CF-IPv4 标签
