@@ -1,0 +1,3 @@
+[2606:4700:0:fe:ad10:67ab:a284:e2e0]#CF-IPv6_IPDB_1
+[2606:4700:0:fe:ad14:57b8:b01b:273c]#CF-IPv6_IPDB_2
+[2606:4700:0:fe:addc:adff:38e6:5c7e]#CF-IPv6_IPDB_3
